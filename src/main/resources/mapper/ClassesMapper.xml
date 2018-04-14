@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wh.workSubmission.mapper.ClassesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wh.workSubmission.entity.Classes">
+        <id column="id" property="id" />
+        <result column="classes_no" property="classesNo" />
+        <result column="classes_name" property="classesName" />
+        <result column="profession_no" property="professionNo" />
+    </resultMap>
+    <select id="selectByClassesNo" resultType="com.wh.workSubmission.entity.Classes">
+        select *
+        from classes
+        where classes_no = #{classesNo}
+    </select>
+    <select id="selectClasses" resultType="com.wh.workSubmission.entity.Classes">
+        <if test='type==null or type=="0"'>
+            select * from classes
+            where 1 = 1
+        </if>
+        <if test='type=="1"'>
+            select distinct classes.id,classes.classes_no,classes.classes_name,classes.profession_no
+            from classes,course,profession
+            where classes.profession_no = course.profession_no
+            and course.profession_no = profession.id
+            and course.teacher_no = #{id}
+        </if>
+        <if test='type=="2"'>
+            select distinct classes.id,classes.classes_no,classes.classes_name,classes.profession_no
+            from classes,student
+            where student.classes_no = classes.id
+            and student.id = #{id}
+        </if>
+        <if test='professionNo!=null and professionNo != ""'>
+            and classes.profession_no = #{professionNo}
+        </if>
+        <if test='keyword != null and keyword!=""'>
+            and classes.classes_no like CONCAT('%', #{keyword}, '%')
+            or classes.classes_name like CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+    <select id="selectByCourse" resultType="com.wh.workSubmission.entity.Classes">
+        select * from classes,course
+        where classes.profession_no = course.profession_no
+        and course.id = #{courseNo}
+    </select>
+
+</mapper>

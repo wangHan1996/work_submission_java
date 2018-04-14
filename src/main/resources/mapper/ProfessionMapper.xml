@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wh.workSubmission.mapper.ProfessionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wh.workSubmission.entity.Profession">
+        <id column="id" property="id" />
+        <result column="profession_no" property="professionNo" />
+        <result column="profession_name" property="professionName" />
+    </resultMap>
+    <select id="selectByProfessionNo" resultType="com.wh.workSubmission.entity.Profession">
+        select * from profession
+        where profession_no = #{professionNo}
+
+    </select>
+
+    <select id="selectProfession" resultType="com.wh.workSubmission.entity.Profession">
+        select * from profession
+        <if test='keyword != null and keyword!=""'>
+            where profession_no like CONCAT('%', #{keyword}, '%')
+            or profession_name like CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+</mapper>

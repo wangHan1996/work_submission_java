@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wh.workSubmission.mapper.WorkReleaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wh.workSubmission.entity.WorkRelease">
+        <id column="id" property="id" />
+        <result column="work_no" property="workNo" />
+        <result column="work_name" property="workName" />
+        <result column="course_no" property="courseNo" />
+        <result column="description" property="description" />
+        <result column="release_time" property="releaseTime" />
+        <result column="address" property="address" />
+    </resultMap>
+    <select id="selectWorkRelease" resultType="com.wh.workSubmission.dto.WorkReleaseDto">
+        select distinct work_release.id, work_release.work_no, work_release.work_name, work_release.course_no,
+        course.course_name, work_release.description, work_release.release_time, work_release.address,
+        IFNULL(submission.num,0) submission_num
+        from course,work_release
+        left join
+        (select work_no, count(*) as num
+          from work_submission
+          group by work_no
+        ) as submission
+        on work_release.work_no = submission.work_no
+        where course.id = work_release.course_no
+        <if test='teacherNo != null and teacherNo != "" '>
+          and course.teacher_no = #{teacherNo}
+        </if>
+        <if test='professionNo!=null and professionNo != "" '>
+            and course.profession_no = #{professionNo}
+        </if>
+        <if test='keyword != null and keyword!=""'>
+            and work_name like CONCAT('%', #{keyword}, '%')
+        </if>
+
+    </select>
+    <select id="selectWorkReleaseForStudent" resultType="com.wh.workSubmission.dto.WorkReleaseDto">
+        select distinct work_release.id, work_release.work_no, work_release.work_name, work_release.course_no,
+        course.course_name, work_release.description, work_release.release_time, work_release.address,
+        IFNULL(submission.status,0) status, course.teacher_no as teacher_no, teacher.name as teacher_name
+        from course,teacher,work_release
+        left join
+        (select work_no, status
+        from work_submission
+        where work_submission.student_no = #{studentNo}
+        ) as submission
+        on work_release.work_no = submission.work_no
+        where course.id = work_release.course_no
+        and teacher.id = course.teacher_no
+        <if test="professionNo!=null and professionNo != ''">
+            and course.profession_no = #{professionNo}
+        </if>
+        <if test="keyword != null and keyword!=''">
+            and work_name like CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wh.workSubmission.mapper.CourseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wh.workSubmission.entity.Course">
+        <id column="id" property="id" />
+        <result column="course_no" property="courseNo" />
+        <result column="course_name" property="courseName" />
+        <result column="profession_no" property="professionNo" />
+        <result column="teacher_no" property="teacherNo" />
+    </resultMap>
+    <select id="selectByCourseNo" resultType="com.wh.workSubmission.entity.Course">
+        select * from course
+        where course_no = #{courseNo}
+    </select>
+    <select id="selectCourse" resultType="com.wh.workSubmission.entity.Course">
+
+        <if test='type=="1"'>
+            select * from course
+            where course.teacher_no = #{id}
+        </if>
+        <if test='type==null or type=="0"'>
+            select  * from course
+            where 1=1
+        </if>
+        <if test='type=="2"'>
+            select distinct course.id as id,course.course_no as course_no,course.course_name as course_name,
+            course.profession_no as profession_no,course.teacher_no as teacher_no
+            from course,student,classes
+            where course.profession_no = classes.profession_no
+            and student.classes_no = classes.id
+            and student.id = #{id}
+        </if>
+        <if test='teacherNo!=null and teacherNo!=""'>
+            and teacher_no = #{teacherNo}
+        </if>
+        <if test='professionNo!=null and professionNo!=""'>
+            and profession_no = #{professionNo}
+        </if>
+        <if test='keyword != null and keyword!=""'>
+            and course_no like CONCAT('%', #{keyword}, '%')
+            or course_name like CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+    <select id="selectByTeacher" resultType="com.wh.workSubmission.entity.Course">
+        select * from course
+        where teacher_no = #{teacherNo}
+    </select>
+
+</mapper>

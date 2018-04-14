@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wh.workSubmission.mapper.WorkSubmissionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wh.workSubmission.entity.WorkSubmission">
+        <id column="id" property="id" />
+        <result column="work_no" property="workNo" />
+        <result column="student_no" property="studentNo" />
+        <result column="address" property="address" />
+        <result column="submission_time" property="submissionTime" />
+        <result column="status" property="status" />
+    </resultMap>
+    <update id="correctionWork">
+        update work_submission
+        set status = #{status}
+        where id = #{id}
+    </update>
+    <select id="selectWorkSubmission" resultType="com.wh.workSubmission.dto.WorkSubmissionDto">
+      select distinct ws.id as id, ws.work_no as work_no, wr.work_name as work_name, wr.course_no as course_no,
+       cou.course_name as course_name, stu.username as student_no, stu.name as student_name, cla.id as classes_no,
+      cla.classes_name as classes_name,ws.submission_time as submission_time, ws.address as address,
+       IFNULL(ws.status,0) as status,cou.teacher_no as teacher_no,tec.name as teacher_name, wr.description as description,
+        wr.release_time as release_time
+      from work_submission as ws,
+      work_release as wr,
+      course as cou,
+      student as stu,
+      classes as cla,
+      teacher as tec
+      where ws.work_no = wr.work_no
+      and ws.student_no = stu.id
+      and wr.course_no = cou.id
+      and stu.classes_no = cla.id
+      and cou.teacher_no = tec.id
+        <if test='workNo!=null and workNo != "" '>
+            and  ws.work_no = #{workNo}
+        </if>
+        <if test='keyword!=null and keyword!= "" '>
+            and wr.work_name like CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test='teacherNo!=null and teacherNo != "" '>
+            and  cou.teacher_no = #{teacherNo}
+        </if>
+        <if test='courseNo!=null and courseNo != "" '>
+            and  wr.course_no = #{courseNo}
+        </if>
+        <if test='studentNo!=null and studentNo != "" '>
+            and  ws.student_no = #{studentNo}
+        </if>
+        <if test='status!=null and status != "" '>
+            and  ws.status = #{status}
+        </if>
+        <if test='classesNo!=null and classesNo != "" '>
+            and  stu.classes_no = #{classesNo}
+        </if>
+    </select>
+    <select id="selectByWorkNoStudentNo" resultType="com.wh.workSubmission.entity.WorkSubmission">
+        select * from work_submission
+        where work_no = #{workNo}
+        and student_no = #{studentNo}
+    </select>
+
+
+</mapper>

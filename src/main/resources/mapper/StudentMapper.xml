@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wh.workSubmission.mapper.StudentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wh.workSubmission.entity.Student">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="name" property="name" />
+        <result column="sex" property="sex" />
+        <result column="classes_no" property="classesNo" />
+    </resultMap>
+
+    <update id="updatePassword">
+        update student
+        set password = #{newPassword}
+        where id = #{id}
+    </update>
+
+    <select id="selectByUsername" resultType="com.wh.workSubmission.entity.Student">
+        select * from student
+        where username = #{username}
+    </select>
+    <select id="selectStudent" resultType="com.wh.workSubmission.entity.Student">
+        <if test='type==null or type!="1"'>
+            select * from student
+            where 1 = 1
+        </if>
+        <if test='type=="1"'>
+            select distinct student.id,student.username,student.password,student.name,student.sex,student.classes_no
+            from student,classes,profession,course
+            where student.classes_no = classes.id
+            and classes.profession_no = profession.id
+            and course.profession_no = profession.id
+            and course.teacher_no = #{id}
+        </if>
+        <if test="classesNo!=null and classesNo!=''">
+            and student.classes_no = #{classesNo}
+        </if>
+        <if test="keyword != null and keyword!=''">
+            and student.username like CONCAT('%', #{keyword}, '%')
+            or student.name like CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+    <select id="selectProfessionId" resultType="java.lang.String">
+        select classes.profession_no from student,classes
+        where student.classes_no = classes.id
+        and student.id = #{studentId}
+    </select>
+
+</mapper>
