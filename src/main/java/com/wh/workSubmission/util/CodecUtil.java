@@ -16,7 +16,7 @@ public class CodecUtil {
 
     /**
      * 加密
-     *
+     *effe
      *
      */
     public static String ecvrypt(String pwd) {
