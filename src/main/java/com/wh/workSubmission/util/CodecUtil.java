@@ -15,7 +15,7 @@ public class CodecUtil {
     }
 
     /**
-     * 加密
+     * 加密eff
      *effe1651
      *
      */
