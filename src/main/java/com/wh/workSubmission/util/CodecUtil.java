@@ -16,6 +16,8 @@ public class CodecUtil {
 
     /**
      * 加密
+     *
+     *
      */
     public static String ecvrypt(String pwd) {
         String base = pwd + "/" + SALT;
